@@ -35,8 +35,8 @@ class Particle:
 
     def shadow(self, mouse_object):
         d = distance(self.position, mouse_object.position)
-        print(d)
         data.shadow_on = False
+        data.mouse_distance = round(d, 2)
         if d < mouse_object.radius - self.high_brightness_radius or d == 0:
             data.shadow_on = True
             self.mod_surface = pygame.Surface([self.size, self.size], pygame.SRCALPHA)
@@ -98,16 +98,13 @@ class Particle:
                         additional_points.append([self.size * x_mod, 0])
                         additional_points.append([self.size * x_mod, self.size])
                         if not x_mod: additional_points.reverse()
-            # additional_points = []
 
-            # Shadow
+            # Shadow drawing
             pygame.draw.polygon(self.mod_surface, 
                                 (0, 0, 0, 180), 
                                 [first_edge, start_end_point, *additional_points, end_end_point, second_edge])
+            # DEBUG projection drawing
             if DEBUG:
-                for point in end_points:
-                    pygame.draw.circle(self.mod_surface, (0, 255, 0), point, 3)
-                    pygame.draw.line(self.mod_surface, (0, 0, 255), [self.part, self.part], point, 2)
                 if additional_points:
                     point = additional_points[0]
                     pygame.draw.polygon(self.mod_surface, 
@@ -116,6 +113,9 @@ class Particle:
                                         3)
                 else:
                     pygame.draw.line(self.mod_surface, (0, 255, 255), end_points[0], end_points[1], 3)
+                for point in end_points:
+                    pygame.draw.circle(self.mod_surface, (0, 255, 0), point, 3)
+                    pygame.draw.line(self.mod_surface, (0, 0, 255), [self.part, self.part], point, 4)
                 pygame.draw.circle(self.mod_surface, (255, 0, 0), first_edge, 5)  
                 pygame.draw.circle(self.mod_surface, (255, 0, 0), second_edge, 5) 
 
@@ -128,7 +128,6 @@ class Particle:
         for depth in reversed(range(0, self.REPEAT * self.PRECISEMENT)):
             r = self.base_radius * (2 ** (1 / self.PRECISEMENT)) ** depth
             lumi = p(self.luminosity, depth, self.PRECISEMENT)
-            print(lumi)
             pygame.draw.circle(self.surface, [*self.base_color, lumi], 
                 [self.part, self.part], r)
             if lumi > self.HIGH_BRIGHTNESS_DEFINER and self.high_brightness_radius == 0:
@@ -136,7 +135,7 @@ class Particle:
         if DEBUG:
             pygame.draw.rect(self.surface, (255, 255, 255), [1, 1, self.size-1, self.size-1], 1)
             
-        self.surface.convert()
+        self.surface.convert_alpha()
         self.mod_surface = self.surface.copy()
 
     def draw(self, surface: pygame.Surface):

@@ -22,7 +22,6 @@ class NotLuminousParticle:
         for depth in reversed(range(1, max_rep)):
             opacity = min(int(255 * self.luminosity * (max_rep - depth -1) / max_rep), 255)
             radius = self.base_radius * depth ** 1.4 / max_rep
-            print(depth, opacity, radius)
             pygame.draw.circle(self.surface,
                                [*self.base_color, opacity],
                                center,

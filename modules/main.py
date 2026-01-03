@@ -3,6 +3,8 @@ from .particle import Particle
 from .settings import DEBUG, screen_size, FPS, HIGH_QUALITY
 from .mouse_object import MouseCircle
 from .debug_settings import get_debug_texts
+from .data import frame_data
+from random import randint
 
 
 pygame.init()
@@ -54,7 +56,10 @@ def main():
             h = 0
             for text_surf in debug_text_surfaces:
                 display.blit(text_surf, (screen_size[0] - text_surf.get_width() - 10, 10 + h))
-                h += text_surf.get_height()
+                h += text_surf.get_height()+5
+            if len(frame_data) > FPS:
+                frame_data.pop(0)
         display.blit(fps_surface, (10, 10))
         pygame.display.flip()
         frame += 1
+        frame_data.append(round(clock.get_fps()))
